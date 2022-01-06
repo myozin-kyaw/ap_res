@@ -10,28 +10,45 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Dishes Panel</h3>
+                            <h3 class="card-title"><b>Dishes Panel</b></h3>
+                            <a href="/dish/create" style="float:right;" class="btn btn-success">Create</a>
                         </div>
+                        @if (session('created'))
+                        <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                        <strong>Success!</strong> {{ session('created') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        @endif
+                        @if (session('updated'))
+                        <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                        <strong>Success!</strong> {{ session('updated') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        @endif
+                        @if (session('deleted'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Success!</strong> {{ session('deleted') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        @endif
                         <!-- /.card-header -->
                         <div class="card-body">
                             <table id="dishes" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Rendering engine</th>
-                                        <th>Browser</th>
-                                        <th>Platform(s)</th>
-                                        <th>Engine version</th>
-                                        <th>CSS grade</th>
+                                        <th>Dish Name</th>
+                                        <th>Category Name</th>
+                                        <th>Created</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Other browsers</td>
-                                        <td>All others</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>U</td>
-                                    </tr>
+                                    @foreach($dishes as $dish)
+                                        <tr>
+                                            <td>{{$dish->name}}</td>
+                                            <td>{{$dish->category->name}}</td>
+                                            <td>{{$dish->created_at}}</td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -42,6 +59,7 @@
     </div><!-- /.content -->
 </div><!-- /.content-wrapper -->
 @endsection
+<script src="plugins/jquery/jquery.min.js"></script>
 <script>
     $(function () {
         // $("#example1").DataTable({
@@ -51,7 +69,8 @@
         $('#dishes').DataTable({
         "paging": true,
         "lengthChange": false,
-        "searching": false,
+        "searching": true,
+        "pageLength": 10,
         "ordering": true,
         "info": true,
         "autoWidth": false,

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dishes;
+use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Http\Requests\DishCreateRequest;
 
 class DishesController extends Controller
 {
@@ -25,7 +27,8 @@ class DishesController extends Controller
      */
     public function create()
     {
-        //
+        $category = Category::all();
+        return view('kitchen.dish_create', compact('category'));
     }
 
     /**
@@ -34,10 +37,18 @@ class DishesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(DishCreateRequest $request)
     {
-        //
-    }
+        $dish = new Dishes();
+        $dish->name = $request->name;
+        $dish->category_id = $request->category_id;
+
+        $imageName = date('YmdHis') . " . " . request()->dish_image->getClientOriginalExtension();
+        request()->dish_image->move(public_path('images'), $imageName);
+        $dish->image = $imageName;
+        $dish->save();
+        return redirect('/dish')->with('created', config('dishCRUD.alert_message.created'));
+    } 
 
     /**
      * Display the specified resource.
