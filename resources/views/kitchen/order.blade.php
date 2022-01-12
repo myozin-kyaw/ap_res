@@ -1,84 +1,81 @@
 @extends('layouts.master')
-
+    
 @section('content')
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">Kitchen Panel</h1>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
-    <!-- /.content-header -->
-
     <!-- Main content -->
     <div class="content">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-lg-6">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-
-                <p class="card-text">
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                </p>
-
-                <a href="#" class="card-link">Card link</a>
-                <a href="#" class="card-link">Another link</a>
-              </div>
-            </div>
-
-            <div class="card card-primary card-outline">
-              <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-
-                <p class="card-text">
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                </p>
-                <a href="#" class="card-link">Card link</a>
-                <a href="#" class="card-link">Another link</a>
-              </div>
-            </div><!-- /.card -->
-          </div>
-          <!-- /.col-md-6 -->
-          <div class="col-lg-6">
-            <div class="card">
-              <div class="card-header">
-                <h5 class="m-0">Featured</h5>
-              </div>
-              <div class="card-body">
-                <h6 class="card-title">Special title treatment</h6>
-
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-              </div>
-            </div>
-
-            <div class="card card-primary card-outline">
-              <div class="card-header">
-                <h5 class="m-0">Featured</h5>
-              </div>
-              <div class="card-body">
-                <h6 class="card-title">Special title treatment</h6>
-
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-              </div>
-            </div>
-          </div>
-          <!-- /.col-md-6 -->
-        </div>
-        <!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
-    <!-- /.content -->
-</div>
-<!-- /.content-wrapper -->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header d-flex bd-highlight mb-3">
+                          <h3>Kitchen - Order Lists Panel</h3>
+                        </div>
+                        @if (session('message'))
+                        <div class="alert alert-success alert-dismissible fade show mx-5" role="alert">
+                        <strong>Success!</strong> {{ session('message') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        @endif
+                        @if (session('cancel'))
+                        <div class="alert alert-danger alert-dismissible fade show mx-5" role="alert">
+                        <strong>Success!</strong> {{ session('cancel') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        @endif
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table id="dishes" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Dish Name</th>
+                                        <th>Table Number</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($orders as $order)
+                                        <tr>
+                                            <td>{{$order->dishes->name}}</td>
+                                            <td>{{$order->table_id}}</td>
+                                            <td>{{$status[$order->status]}}</td>
+                                            <td>
+                                              <div>
+                                                  <a href="/order/{{$order->id}}/approve" class="btn btn-warning">Approve</a>
+                                                  <a style="margin:0 2em;" href="/order/{{$order->id}}/cancel" class="btn btn-danger">Cancel</a>
+                                                  <a href="/order/{{$order->id}}/ready" class="btn btn-success">Ready</a>
+                                              </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div><!-- card -->
+                </div><!-- col-lg-12 -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div><!-- /.content -->
+</div><!-- /.content-wrapper -->
 @endsection
+<script src="plugins/jquery/jquery.min.js"></script>
+<script>
+    $(function () {
+        // $("#example1").DataTable({
+        // "responsive": true, "lengthChange": false, "autoWidth": false,
+        // "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        // }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+        $('#dishes').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": false,
+        "pageLength": 10,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        });
+    });
+</script>

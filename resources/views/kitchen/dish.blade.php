@@ -9,9 +9,13 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title"><b>Dishes Panel</b></h3>
-                            <a href="/dish/create" style="float:right;" class="btn btn-success">Create</a>
+                        <div class="card-header d-flex bd-highlight mb-3">
+                            <div class="p-2 bd-highlight">
+                                <h3>Kitchen - Dishes Panel</h3>
+                            </div>
+                            <div class="ms-auto p-2 bd-highlight">
+                                <a href="/dish/create" style="float:right;" class="btn btn-success">Create</a>
+                            </div>
                         </div>
                         @if (session('created'))
                         <div class="alert alert-secondary alert-dismissible fade show" role="alert">
@@ -39,6 +43,7 @@
                                         <th>Dish Name</th>
                                         <th>Category Name</th>
                                         <th>Created</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -47,6 +52,16 @@
                                             <td>{{$dish->name}}</td>
                                             <td>{{$dish->category->name}}</td>
                                             <td>{{$dish->created_at}}</td>
+                                            <td>
+                                                <div class="form-row">
+                                                    <a style="height:40px; margin-right:10px;" href="/dish/{{$dish->id}}/edit" class="btn btn-warning">Edit</a>
+                                                    <form action="/dish/{{$dish->id}}" method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" onclick="return confirm('Are you sure you want to delete this item?');" class="btn btn-danger">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>

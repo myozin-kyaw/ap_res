@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dishes;
+use App\Models\Orders;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Requests\DishCreateRequest;
@@ -14,6 +15,12 @@ class DishesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     public function index()
     {
         $dishes = Dishes::all();
@@ -45,7 +52,7 @@ class DishesController extends Controller
 
         $imageName = date('YmdHis') . " . " . request()->dish_image->getClientOriginalExtension();
         request()->dish_image->move(public_path('images'), $imageName);
-        $dish->image = $imageName;
+        $dish->dish_image = $imageName;
         $dish->save();
         return redirect('/dish')->with('created', config('dishCRUD.alert_message.created'));
     } 
@@ -67,9 +74,10 @@ class DishesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Dishes $dish)
     {
-        //
+        $category = Category::all();
+        return view('kitchen.dish_edit', compact('dish','category'));
     }
 
     /**
@@ -79,9 +87,21 @@ class DishesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Dishes $dish)
     {
-        //
+        request()->validate([
+            'name' => 'required',
+            'category_id' => 'required',
+        ]);
+        $dish->name = $request->name;
+        $dish->category_id = $request->category_id;
+        if($request->dish_image) {
+            $imageName = date('YmdHis') . " . " . request()->dish_image->getClientOriginalExtension();
+            request()->dish_image->move(public_path('images'), $imageName);
+            $dish->dish_image = $imageName;
+        }
+        $dish->save();
+        return redirect('/dish')->with('updated', config('dishCRUD.alert_message.updated'));
     }
 
     /**
@@ -90,8 +110,38 @@ class DishesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Dishes $dish)
     {
-        //
+        $dish->delete();
+        return redirect('/dish')->with('deleted', config('dishCRUD.alert_message.deleted'));
     }
+
+    public function order_list() {
+        $raw_status = config('res.order_status');
+        $status = array_flip($raw_status);
+        $orders = Orders::whereIn('status',[1,2])->get();
+        return view('kitchen.order', compact('orders', 'status'));
+    }
+
+    public function approve(Orders $order) 
+    {
+        $order->status = config('res.order_status.processing');
+        $order->save();
+        return redirect('/order')->with("message", config('saveOrder.message.approve'));
+    }
+
+    public function cancel(Orders $order) 
+    {
+        $order->status = config('res.order_status.cancel');
+        $order->save();
+        return redirect('/order')->with("cancel", config('saveOrder.message.cancel'));
+    }
+
+    public function ready(Orders $order) 
+    {
+        $order->status = config('res.order_status.ready');
+        $order->save();
+        return redirect('/order')->with("message", config('saveOrder.message.ready'));
+    }
+
 }

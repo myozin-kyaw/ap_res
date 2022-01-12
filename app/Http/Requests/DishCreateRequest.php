@@ -24,7 +24,7 @@ class DishCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:posts|max:255',
+            'name' => 'required|unique:dishes|max:255',
             'category_id' => 'required',
             'dish_image' => 'required|image'
         ];
